@@ -31,6 +31,8 @@ Begin Dialog dlgMenu 51,11,338,216,"Journal Entries Completeness Task", .Display
   Text 167,140,40,14, "JE db Match Field", .Text2
   DropListBox 227,141,84,11, ListBox3$(), .DropListBox7
 End Dialog
+
+
 '****************************************************************************************************************
 '* Script:		JE_Completeness.iss
 '* By:		Shahbaz
@@ -220,6 +222,58 @@ Function menu()
 	Set field = Nothing
 End Function
 
+Function validateMenu() As Boolean
+	validateMenu = TRUE
+	'Error 1 - TB Op file selection check with relevant fields
+	If fname1 = "" Then
+		MsgBox "Please select a trial balance for openning balance.", MB_ICONEXCLAMATION, "Error 1"
+		validateMenu = FALSE
+	ElseIf fname2 = "" Then
+		MsgBox "Please select a trial balance for closing balance.", MB_ICONEXCLAMATION, "Error 1"
+		validateMenu = FALSE
+	ElseIf fname3 = "" Then
+		MsgBox "Please select a journal entries file.", MB_ICONEXCLAMATION, "Error 1"
+		validateMenu = FALSE
+	End If
+	
+	'Error 2 - amount fields and Error 3 - for match fields for joining database
+	If amtfield1 = "" Then
+		MsgBox "Please select proper openning balance field.", MB_ICONEXCLAMATION, "Error 2"
+		validateMenu = FALSE
+	ElseIf amtfield2 = "" Then 
+		MsgBox "Please select match key field for openning trial balance database.", MB_ICONEXCLAMATION, "Error 3"
+		validateMenu = FALSE
+	ElseIf amtfield3 = "" Then 
+		MsgBox "Please select proper openning balance field.", MB_ICONEXCLAMATION, "Error 2"
+		validateMenu = FALSE
+	ElseIf amtfield4 = "" Then 
+		MsgBox "Please select match key field for closing trial balance database.", MB_ICONEXCLAMATION, "Error 3"
+		validateMenu = FALSE
+	ElseIf amtfield5 = "" Then 
+		MsgBox "Please select proper debit balance field from journal entries file.", MB_ICONEXCLAMATION, "Error 2"
+		validateMenu = FALSE
+	ElseIf amtfield6 = "" Then 
+		MsgBox "Please select proper credit balance field from journal entries file.", MB_ICONEXCLAMATION, "Error 2"
+		validateMenu = FALSE
+	ElseIf amtfield7 = "" Then 
+		MsgBox "Please select match key field for trial balance closing balance.", MB_ICONEXCLAMATION, "Error 3"
+		validateMenu = FALSE
+	End If 
+
+	'Error 3 - newfilename error
+	If newFilename = "" Then
+		MsgBox "Please enter a new filename", MB_ICONEXCLAMATION, "Error 3"
+		validateMenu = FALSE
+	End If
+	
+	'Error 4 - checkfor special character in filename
+	If checkForSpecialChar(newFilename, "\/:*?""<>[]|") Then
+		MsgBox "Please do not use the following in your filename - \/:*?""<>[]|", MB_ICONEXCLAMATION, "Error 4"
+		validateMenu = false
+	End If
+	
+End Function
+
 'Function to display the dialog
 Function Displayit(ControlID$, Action%, SuppValue%)
 	If fname1 = "" Then
@@ -371,3 +425,18 @@ Function getFileName(temp_filename As String, temp_type As Boolean) '1 if get th
 	End If
 End Function
 
+Function checkForSpecialChar(temp_string As String, temp_list As String) As Boolean
+	Dim strLen As Integer
+	Dim tempChar As String
+	Dim i As Integer
+	Dim pos As Integer
+	checkForSpecialChar = FALSE
+	strlen = Len(temp_list)
+	For i = 1 To strLen
+		tempChar = Mid(temp_list, i, 1)
+		pos = InStr(1, temp_string, tempChar)
+		If pos > 0 Then
+			checkForSpecialChar = TRUE
+		End If
+	Next i
+End Function
