@@ -31,14 +31,12 @@ Begin Dialog dlgMenu 51,11,338,216,"Journal Entries Completeness Task", .Display
   Text 167,140,40,14, "JE db Match Field", .Text2
   DropListBox 227,141,84,11, ListBox3$(), .DropListBox7
 End Dialog
-
-
 '****************************************************************************************************************
 '* Script:		JE_Completeness.iss
 '* By:		Shahbaz
 '* Version:	1.0
 '* Date:		March 24, 2016
-'* Purpose:	To ensure completeness of JEs by trial balance movement for millions of records
+'* Purpose:	To ensure completeness of JEs by trial balance movement 
 '***************************************************************************************************************
 Option Explicit
 
@@ -132,7 +130,7 @@ Function menu()
 				End If
 			
 				newFilename = dlg.txtNewFilename
-				exitDialog = TRUE
+				if validatemenu() then exitDialog = TRUE
 			Case 0 ' cancel button
 				exitDialog = TRUE
 				exitScript = TRUE
@@ -158,7 +156,7 @@ Function menu()
 				End If
 				
 				If j = 0 Then
-					MsgBox "The file selected does not contain a numeric field", MB_ICONEXCLAMATION, "Error"
+					MsgBox "The file selected does not contain a numeric field", MB_ICONEXCLAMATION, "Error 5"
 					fname1 = ""
 				End If
 			
@@ -183,7 +181,7 @@ Function menu()
 				End If
 				
 				If j = 0 Then
-					MsgBox "The file selected does not contain a numeric field", MB_ICONEXCLAMATION, "Error"
+					MsgBox "The file selected does not contain a numeric field", MB_ICONEXCLAMATION, "Error 5"
 					fname2 = ""
 				End If
 
@@ -208,7 +206,7 @@ Function menu()
 				End If
 				
 				If j = 0 Then
-					MsgBox "The file selected does not contain a numeric field", MB_ICONEXCLAMATION, "Error"
+					MsgBox "The file selected does not contain a numeric field", MB_ICONEXCLAMATION, "Error 5"
 					fname3 = ""
 				End If
 
@@ -235,7 +233,6 @@ Function validateMenu() As Boolean
 		MsgBox "Please select a journal entries file.", MB_ICONEXCLAMATION, "Error 1"
 		validateMenu = FALSE
 	End If
-	
 	'Error 2 - amount fields and Error 3 - for match fields for joining database
 	If amtfield1 = "" Then
 		MsgBox "Please select proper openning balance field.", MB_ICONEXCLAMATION, "Error 2"
@@ -256,7 +253,7 @@ Function validateMenu() As Boolean
 		MsgBox "Please select proper credit balance field from journal entries file.", MB_ICONEXCLAMATION, "Error 2"
 		validateMenu = FALSE
 	ElseIf amtfield7 = "" Then 
-		MsgBox "Please select match key field for trial balance closing balance.", MB_ICONEXCLAMATION, "Error 3"
+		MsgBox "Please select match key field for Journal Entries database.", MB_ICONEXCLAMATION, "Error 3"
 		validateMenu = FALSE
 	End If 
 
@@ -349,7 +346,6 @@ Function RelateDatabase
 	Set id0 = Nothing
 	Set id1 = Nothing
 	Set id2 = Nothing
-	Client.opendatabase(dbName)
 End Function
 
 ' Append Field : DERIVED_CLOSING
@@ -398,6 +394,7 @@ Function AppendField1
 	Set task = Nothing
 	Set db = Nothing
 	Set field = Nothing
+	Client.OpenDatabase(fname5)
 End Function
 
 Function getFileName(temp_filename As String, temp_type As Boolean) '1 if get the name with any folder info, 0 if only the name
