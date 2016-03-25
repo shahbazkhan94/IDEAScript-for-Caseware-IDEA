@@ -1,6 +1,9 @@
 Dim ListBox1$() AS string
 Dim ListBox2$() AS string
 Dim ListBox3$() AS string
+Dim ListBox4$() AS STRING
+Dim ListBox5$() AS STRING
+Dim ListBox6$() AS STRING
 
 Begin Dialog dlgMenu 51,11,338,216,"Journal Entries Completeness Task", .Displayit
   Text 6,6,96,7, "Trial Balance for Openning Balance", .Text1
@@ -25,11 +28,11 @@ Begin Dialog dlgMenu 51,11,338,216,"Journal Entries Completeness Task", .Display
   OKButton 194,172,40,14, "OK", .OKButton1
   CancelButton 265,173,40,14, "Cancel", .CancelButton1
   Text 167,33,40,14, "TB_OP_Bal Match Field", .Text2
-  DropListBox 227,34,84,11, ListBox1$(), .DropListBox2
+  DropListBox 227,34,84,11, ListBox4$(), .DropListBox2
   Text 167,76,40,14, "TB_CL_Bal Match Field", .Text2
-  DropListBox 227,77,84,11, ListBox2$(), .DropListBox4
+  DropListBox 227,77,84,11, ListBox5$(), .DropListBox4
   Text 167,140,40,14, "JE db Match Field", .Text2
-  DropListBox 227,141,84,11, ListBox3$(), .DropListBox7
+  DropListBox 227,141,84,11, ListBox6$(), .DropListBox7
 End Dialog
 '****************************************************************************************************************
 '* Script:		JE_Completeness.iss
@@ -77,7 +80,7 @@ Function menu()
 	Dim source As Object
 	Dim table As Object
 	Dim fields As Integer
-	Dim i, j As Integer
+	Dim i, j, k As Integer
 	Dim field As Object
 	
 	'Looping for dialog display
@@ -94,7 +97,7 @@ Function menu()
 				End If
 								
 				If dlg.DropListBox2 > -1 Then
-					amtfield2 = ListBox1$(dlg.DropListBox2)
+					amtfield2 = ListBox4$(dlg.DropListBox2)		' ListBox4 for all fields types for match key OP TB
 				Else
 					amtfield2 = ""
 				End If
@@ -106,7 +109,7 @@ Function menu()
 				End If
 				
 				If dlg.DropListBox4 > -1 Then
-					amtfield4 = ListBox2$(dlg.DropListBox4)
+					amtfield4 = ListBox5$(dlg.DropListBox4)		' ListBox5 for all fields types for match key CL TB
 				Else
 					amtfield4 = ""
 				End If
@@ -123,8 +126,8 @@ Function menu()
 					amtfield6 = ""
 				End If
 				
-				If dlg.DropListBox7 > -1 Then
-					amtfield7 = ListBox3$(dlg.DropListBox7)
+				If dlg.DropListBox7 > -1 Then				' ListBox6 for all fields types for match key JE db
+					amtfield7 = ListBox6$(dlg.DropListBox7)
 				Else
 					amtfield7 = ""
 				End If
@@ -144,13 +147,17 @@ Function menu()
 					Set table = source.tabledef
 					fields = table.count
 					ReDim ListBox1$(fields)
+					ReDim ListBox4$(fields)
 					j = 0
+					k = 0
 					For i = 1 To fields
 						Set field = table.getfieldat(i)
 						If field.isnumeric Then
 							ListBox1$(j) = field.name
 							j = j + 1
 						End If
+						ListBox4$(k) = field.name
+						k = k +1
 					Next i
 					
 				End If
@@ -169,13 +176,17 @@ Function menu()
 					Set table = source.tabledef
 					fields = table.count
 					ReDim ListBox2$(fields)
+					ReDim ListBox5$(fields)
 					j = 0
+					k = 0
 					For i = 1 To fields
 						Set field = table.getfieldat(i)
 						If field.isnumeric Then
 							ListBox2$(j) = field.name
 							j = j + 1
 						End If
+						ListBox5$(k) = field.name
+						k = k + 1
 					Next i
 					
 				End If
@@ -194,13 +205,17 @@ Function menu()
 					Set table = source.tabledef
 					fields = table.count
 					ReDim ListBox3$(fields)
+					ReDim ListBox6$(fields)
 					j = 0
+					k = 0
 					For i = 1 To fields
 						Set field = table.getfieldat(i)
 						If field.isnumeric Then
 							ListBox3$(j) = field.name
 							j = j + 1
 						End If
+						ListBox6$(k) = field.name
+						k = k + 1
 					Next i
 					
 				End If
@@ -233,6 +248,7 @@ Function validateMenu() As Boolean
 		MsgBox "Please select a journal entries file.", MB_ICONEXCLAMATION, "Error 1"
 		validateMenu = FALSE
 	End If
+	
 	'Error 2 - amount fields and Error 3 - for match fields for joining database
 	If amtfield1 = "" Then
 		MsgBox "Please select proper openning balance field.", MB_ICONEXCLAMATION, "Error 2"
@@ -318,6 +334,7 @@ End Function
 
 ' File: Visual Connector
 Function RelateDatabase
+	On Error GoTo ErrorHandler	'Initiating error handling procedure
 	Dim db As database
 	Dim task As task
 	Dim dbName As String
@@ -346,6 +363,9 @@ Function RelateDatabase
 	Set id0 = Nothing
 	Set id1 = Nothing
 	Set id2 = Nothing
+	Exit Function
+ErrorHandler:
+	MsgBox "Field type of matching keys are not same. Please select same field type.", MB_ICONEXCLAMATION, "Error 6"
 End Function
 
 ' Append Field : DERIVED_CLOSING
