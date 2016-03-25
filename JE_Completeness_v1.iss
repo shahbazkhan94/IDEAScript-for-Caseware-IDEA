@@ -37,8 +37,8 @@ End Dialog
 '****************************************************************************************************************
 '* Script:		JE_Completeness.iss
 '* By:		Shahbaz
-'* Version:	1.0
-'* Date:		March 24, 2016
+'* Version:	1.5
+'* Date:		March 25, 2016
 '* Purpose:	To ensure completeness of JEs by trial balance movement 
 '***************************************************************************************************************
 Option Explicit
@@ -58,6 +58,7 @@ Dim amtfield7 As String	' for JE match
 Dim newFilename As String	'new filename'
 Dim working_directory As String
 Dim exitScript As Boolean
+Dim returnsubmain As Boolean
 
 Sub Main
 	working_directory = Client.WorkingDirectory
@@ -236,6 +237,16 @@ Function menu()
 End Function
 
 Function validateMenu() As Boolean
+	Dim db1 As database
+	Dim db2 As database
+	Dim db3 As database
+	Dim table1 As table
+	Dim table2 As table
+	Dim table3 As table
+	Dim field1 As Object
+	Dim field2 As Object
+	Dim field3 As Object
+	
 	validateMenu = TRUE
 	'Error 1 - TB Op file selection check with relevant fields
 	If fname1 = "" Then
@@ -282,8 +293,37 @@ Function validateMenu() As Boolean
 	'Error 4 - checkfor special character in filename
 	If checkForSpecialChar(newFilename, "\/:*?""<>[]|") Then
 		MsgBox "Please do not use the following in your filename - \/:*?""<>[]|", MB_ICONEXCLAMATION, "Error 4"
-		validateMenu = false
+		validateMenu = FALSE
 	End If
+	
+	
+	'Error 6 - to check matching key fields for the same type for joining
+	Set db1 = Client.OpenDatabase(fname1)
+	Set db2 = Client.OpenDatabase(fname2)
+	Set db3 = Client.OpenDatabase(fname3)
+	Set table1 = db1.TableDef
+	Set table2 = db2.TableDef
+	Set table3 = db3.TableDef
+	Set field1 = table1.GetField(amtfield2)
+	Set field2 = table2.GetField(amtfield4)
+	Set field3 = table3.GetField(amtfield7)
+	If field1.Type = field2.Type And field2.Type = field3.Type Then
+		validateMenu = TRUE
+		Client.CloseAll
+	Else
+		MsgBox "Field type of matching keys are not same. Please select same field type.", MB_ICONEXCLAMATION, "Error 6"
+		validateMenu = FALSE
+		Client.CloseAll
+	End If 
+	Set db1 = Nothing
+	Set db2 = Nothing
+	Set db3 = Nothing
+	Set table1 = Nothing
+	Set table2 = Nothing
+	Set table3 = Nothing
+	Set field1 = Nothing
+	Set field2 = Nothing
+	Set field3 = Nothing
 	
 End Function
 
@@ -332,9 +372,9 @@ Function Summarization
 End Function
 
 
+
 ' File: Visual Connector
 Function RelateDatabase
-	On Error GoTo ErrorHandler	'Initiating error handling procedure
 	Dim db As database
 	Dim task As task
 	Dim dbName As String
@@ -350,12 +390,12 @@ Function RelateDatabase
 	task.MasterDatabase = id0
 	task.AppendDatabaseNames = FALSE
 	task.IncludeAllPrimaryRecords = TRUE
+	dbName = client.UniqueFilename(newFilename)
+	Set fname5 = dbName
 	task.AddRelation id0, amtfield4, id1, amtfield2
 	task.AddRelation id1, amtfield2, id2, amtfield7
 	task.IncludeAllFields
-	task.CreateVirtualDatabase = False
-	dbName = client.UniqueFilename(newFilename)
-	Set fname5 = dbName
+	task.CreateVirtualDatabase = False	
 	task.OutputDatabaseName = dbName
 	task.PerformTask
 	Set task = Nothing
@@ -363,9 +403,7 @@ Function RelateDatabase
 	Set id0 = Nothing
 	Set id1 = Nothing
 	Set id2 = Nothing
-	Exit Function
-ErrorHandler:
-	MsgBox "Field type of matching keys are not same. Please select same field type.", MB_ICONEXCLAMATION, "Error 6"
+	Exit Sub						
 End Function
 
 ' Append Field : DERIVED_CLOSING
@@ -388,7 +426,6 @@ Function AppendField
 	task.AppendField field
 	task.PerformTask
 	Set task = Nothing
-	Set db = Nothing
 	Set field = Nothing
 End Function
 
@@ -412,8 +449,8 @@ Function AppendField1
 	task.AppendField field
 	task.PerformTask
 	Set task = Nothing
-	Set db = Nothing
 	Set field = Nothing
+	Client.CloseAll
 	Client.OpenDatabase(fname5)
 End Function
 
