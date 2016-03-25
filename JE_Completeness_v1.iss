@@ -1,11 +1,3 @@
-'****************************************************************************************************************
-'* Script:		JE_Completeness.iss
-'* By:		Shahbaz
-'* Version:	1.0
-'* Date:		March 24, 2016
-'* Purpose:	To ensure completeness of JEs by trial balance movement for millions of records
-'***************************************************************************************************************
-
 Dim ListBox1$() AS string
 Dim ListBox2$() AS string
 Dim ListBox3$() AS string
@@ -39,7 +31,13 @@ Begin Dialog dlgMenu 51,11,338,216,"Journal Entries Completeness Task", .Display
   Text 167,140,40,14, "JE db Match Field", .Text2
   DropListBox 227,141,84,11, ListBox3$(), .DropListBox7
 End Dialog
-
+'****************************************************************************************************************
+'* Script:		JE_Completeness.iss
+'* By:		Shahbaz
+'* Version:	1.0
+'* Date:		March 24, 2016
+'* Purpose:	To ensure completeness of JEs by trial balance movement for millions of records
+'***************************************************************************************************************
 Option Explicit
 
 Dim fname1 As String  'Trail Balance for openning balance
@@ -47,14 +45,14 @@ Dim fname2 As String  'Trial Balance for closing balance
 Dim fname3 As String 'JEs file
 Dim fname4 As String ' Summarized JEs file
 Dim fname5 As String ' Joined all files
-Dim amtfield1 As String
-Dim amtfield2 As String
-Dim amtfield3 As String
-Dim amtfield4 As String
-Dim amtfield5 As String
-Dim amtfield6 As String
-Dim amtfield7 As String
-Dim newFilename As String
+Dim amtfield1 As String 	' for tb OP bal
+Dim amtfield2 As String 	' for tb OP match 
+Dim amtfield3 As String	' for tb CL bal
+Dim amtfield4 As String	' for tb CL match
+Dim amtfield5 As String	' for JE Dr bal
+Dim amtfield6 As String	' for JE Cr bal
+Dim amtfield7 As String	' for JE match
+Dim newFilename As String	'new filename'
 Dim working_directory As String
 Dim exitScript As Boolean
 
@@ -62,15 +60,16 @@ Sub Main
 	working_directory = Client.WorkingDirectory
 	Call menu()
 	If Not exitScript Then
-		Call Summarization()	'JV 2015-Auditors-processed-Limit_Records.IMD
+		Call Summarization()
 		Call RelateDatabase()
-		Call AppendField()	'Final_Join.IMD
-		Call AppendField1()	'Final_Join.IMD
+		Call AppendField()
+		Call AppendField1()
 	End If
 	client.refreshFileExplorer
 End Sub
 
 Function menu()
+	'Local variable definition
 	Dim dlg As dlgMenu
 	Dim button As Integer
 	Dim filebar As Object
@@ -81,6 +80,7 @@ Function menu()
 	Dim i, j As Integer
 	Dim field As Object
 	
+	'Looping for dialog display
 	Do
 	
 		button = Dialog(dlg)
@@ -128,14 +128,14 @@ Function menu()
 				Else
 					amtfield7 = ""
 				End If
-				
 			
 				newFilename = dlg.txtNewFilename
 				exitDialog = TRUE
 			Case 0 ' cancel button
 				exitDialog = TRUE
 				exitScript = TRUE
-			Case 1'filename select button
+				
+			Case 1 ' File for TB OP Balance
 				Set filebar = CreateObject("ideaex.fileexplorer")
 				filebar.displaydialog
 				fname1 = filebar.selectedfile
@@ -160,7 +160,7 @@ Function menu()
 					fname1 = ""
 				End If
 			
-			Case 2'filename select button
+			Case 2 ' File for TB CL Balance
 				Set filebar = CreateObject("ideaex.fileexplorer")
 				filebar.displaydialog
 				fname2 = filebar.selectedfile
@@ -185,7 +185,7 @@ Function menu()
 					fname2 = ""
 				End If
 
-			Case 3 'filename select button
+			Case 3 ' File for JE DR CR Balance
 				Set filebar = CreateObject("ideaex.fileexplorer")
 				filebar.displaydialog
 				fname3 = filebar.selectedfile
@@ -213,12 +213,14 @@ Function menu()
 								
 		End Select
 	Loop While exitDialog = FALSE
-
+	
+	'Clearing memory
 	Set source = Nothing
 	Set table = Nothing
 	Set field = Nothing
 End Function
 
+'Function to display the dialog
 Function Displayit(ControlID$, Action%, SuppValue%)
 	If fname1 = "" Then
 		DlgText "txtfname1", "No file selected"
@@ -271,6 +273,7 @@ Function RelateDatabase
 	Dim id0 As Variant
 	Dim id1 As Variant
 	Dim id2 As Variant
+	
 	Set db = Client.OpenDatabase(fname2)
 	Set task = db.VisualConnector
 	Set id0 = task.AddDatabase(fname2)
@@ -295,7 +298,7 @@ Function RelateDatabase
 	Client.opendatabase(dbName)
 End Function
 
-' Append Field
+' Append Field : DERIVED_CLOSING
 Function AppendField
 	Dim db As database
 	Dim task As task
@@ -319,7 +322,7 @@ Function AppendField
 	Set field = Nothing
 End Function
 
-'Append Field 2
+'Append Field 1 : DIFFERENCE
 Function AppendField1
 	Dim db As database
 	Dim task As task
@@ -367,3 +370,4 @@ Function getFileName(temp_filename As String, temp_type As Boolean) '1 if get th
 		getFileName = tempfilename
 	End If
 End Function
+
