@@ -48,14 +48,15 @@ The routine simply performs the following key tasks:
   * Field 2 name: ```DIFFERENCE```
   * Criteria 2: ``` DERIVED_CLOSING - CLOSING_BAL```
 
-##### _Additional Features_
-* Added error handling routines that verifies dialog menu before processing with list of 6 errors.
-* Unique file name
-* Add separately the summarized database with name "Summarize by Account No." 
-* Used virtual field type for while appending that gives ability to see and change formula.
+##### _Additional Features & Fixes_
+* Added: error handling routines that verifies dialog menu before processing with list of 6 errors.
+* Added: Unique file name
+* Added: Add separately the summarized database with name "Summarize by Account No." 
+* Added: Used virtual field type for while appending that gives ability to see and change formula.
+* Added: Underlying speedup keys for fast input i.e. press ```ALT``` key shows underlines letters for faster input.
+* Fix: Grouped all three files and format changes for clear visualization
 
 ##### _Upcoming Features_
 * Help button for displaying help while giving error
-* Underlying word shortcuts for fast input
 * Data preparation routine for this routine for datasets that have additional fields or separate debit and credit fields.
 * Report generation into word document with details.
