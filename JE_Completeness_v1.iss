@@ -1,43 +1,43 @@
 Dim ListBox1$() AS string
 Dim ListBox2$() AS string
 Dim ListBox3$() AS string
-Dim ListBox4$() AS STRING
-Dim ListBox5$() AS STRING
-Dim ListBox6$() AS STRING
+Dim ListBox4$() AS string
+Dim ListBox5$() AS string
+Dim ListBox6$() AS string
 
-Begin Dialog dlgMenu 51,11,338,216,"Journal Entries Completeness Task", .Displayit
-  Text 6,6,96,7, "Trial Balance for Openning Balance", .Text1
-  Text 6,50,86,9, "Trial Balance for Closing Balance", .Text1
-  Text 7,92,40,10, "Journal Entries", .Text1
-  Text 54,16,100,28, "Text", .txtfname1
-  Text 55,63,99,24, "Text", .txtfname2
-  Text 54,105,100,27, "Text", .txtfname3
-  Text 167,15,40,14, "TB_OP_Bal Field", .Text2
-  Text 168,62,40,14, "TB_CL_Bal Field", .Text2
-  Text 168,102,40,14, "JE_DR Field", .Text2
-  Text 167,119,40,14, "JE_CR Field", .Text2
-  DropListBox 227,16,84,11, ListBox1$(), .DropListBox1
-  DropListBox 227,63,84,11, ListBox2$(), .DropListBox3
-  DropListBox 227,105,84,10, ListBox3$(), .DropListBox5
-  DropListBox 227,120,84,10, ListBox3$(), .DropListBox6
-  Text 8,172,40,14, "New Filename", .Text2
-  TextBox 57,171,106,12, .txtNewFilename
-  PushButton 7,16,40,14, "Select file", .PushButton1
-  PushButton 7,62,40,14, "Select file", .PushButton2
-  PushButton 8,105,40,14, "Select file", .PushButton3
-  OKButton 194,172,40,14, "OK", .OKButton1
-  CancelButton 265,173,40,14, "Cancel", .CancelButton1
-  Text 167,33,40,14, "TB_OP_Bal Match Field", .Text2
-  DropListBox 227,34,84,11, ListBox4$(), .DropListBox2
-  Text 167,76,40,14, "TB_CL_Bal Match Field", .Text2
-  DropListBox 227,77,84,11, ListBox5$(), .DropListBox4
-  Text 167,140,40,14, "JE db Match Field", .Text2
-  DropListBox 227,141,84,11, ListBox6$(), .DropListBox7
+Begin Dialog dlgMenu 49,10,339,215,"Journal Entries Completeness Task", .Displayit
+  Text 58,16,100,28, "Text", .txtfname1
+  Text 58,65,100,24, "Text", .txtfname2
+  Text 58,113,100,27, "Text", .txtfname3
+  Text 171,15,50,14, "TB_OP_Bal Field", .Text2
+  Text 171,63,50,10, "TB_CL_Bal Field", .Text2
+  Text 171,112,50,14, "JE_DR Field", .Text2
+  Text 171,129,50,10, "JE_CR Field", .Text2
+  DropListBox 231,15,84,11, ListBox1$(), .DropListBox1
+  DropListBox 231,63,84,11, ListBox2$(), .DropListBox3
+  DropListBox 231,112,84,10, ListBox3$(), .DropListBox5
+  DropListBox 231,130,84,10, ListBox3$(), .DropListBox6
+  Text 12,172,40,14, "New Filename", .Text2
+  TextBox 61,172,106,12, .txtNewFilename
+  PushButton 12,16,40,14, "&Select file", .PushButton1
+  PushButton 12,64,40,14, "Selec&t file", .PushButton2
+  PushButton 12,113,40,14, "Sel&ect file", .PushButton3
+  OKButton 198,172,40,14, "O&k", .OKButton1
+  CancelButton 269,172,40,14, "Can&cel", .CancelButton1
+  Text 171,33,50,14, "TB_OP_Bal Match Field", .Text2
+  DropListBox 231,33,84,11, ListBox4$(), .DropListBox2
+  Text 171,78,50,14, "TB_CL_Bal Match Field", .Text2
+  DropListBox 231,78,84,11, ListBox5$(), .DropListBox4
+  Text 171,146,50,14, "JE db Match Field", .Text2
+  DropListBox 231,147,84,11, ListBox6$(), .DropListBox7
+  GroupBox 7,4,315,45, "Trial Balance for Openning Balance", .GroupBox1
+  GroupBox 7,100,315,62, "Journal Entries file", .GroupBox2
+  GroupBox 7,52,315,42, "Trial Balance for Closing Balance", .GroupBox2
 End Dialog
 '****************************************************************************************************************
 '* Script:		JE_Completeness.iss
-'* By:		Shahbaz
-'* Version:	1.5
+'* By:		Shahbaz Khan
+'* Version:	1.0
 '* Date:		March 25, 2016
 '* Purpose:	To ensure completeness of JEs by trial balance movement 
 '***************************************************************************************************************
@@ -451,6 +451,7 @@ Function AppendField1
 	Set task = Nothing
 	Set field = Nothing
 	Client.CloseAll
+	db.ControlAmountField "DIFFERENCE"
 	Client.OpenDatabase(fname5)
 End Function
 
