@@ -1,9 +1,9 @@
 ## Journal Entry Completeness Routine v1.0
 
 This is initial release of the *Journal Entry Completeness Routine*. 
-Version: *v1.0*
-Authored by *Shahbaz Khan*
-Dated: *March 26, 2016*
+- Version: *v1.0*
+- Authored by *Shahbaz Khan*
+- Dated: *March 26, 2016*
 
 ##### Setting Up Guide
 You can setup this routine to your IDEA Desktop ribbon by following simple task
