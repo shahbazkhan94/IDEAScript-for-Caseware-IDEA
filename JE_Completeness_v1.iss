@@ -68,6 +68,8 @@ Sub Main
 		Call RelateDatabase()
 		Call AppendField()
 		Call AppendField1()
+		Client.CloseAll
+		Client.Opendatabase(fname5)
 	End If
 	client.refreshFileExplorer
 End Sub
@@ -450,9 +452,7 @@ Function AppendField1
 	task.PerformTask
 	Set task = Nothing
 	Set field = Nothing
-	Client.CloseAll
 	db.ControlAmountField "DIFFERENCE"
-	Client.OpenDatabase(fname5)
 End Function
 
 Function getFileName(temp_filename As String, temp_type As Boolean) '1 if get the name with any folder info, 0 if only the name
