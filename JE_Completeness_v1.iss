@@ -453,8 +453,6 @@ Function AppendField1
 	Set task = Nothing
 	Set field = Nothing
 	db.ControlAmountField "DIFFERENCE"
-	Client.CloseAll
-	Client.OpenDatabase(fname5)
 End Function
 
 Function getFileName(temp_filename As String, temp_type As Boolean) '1 if get the name with any folder info, 0 if only the name
