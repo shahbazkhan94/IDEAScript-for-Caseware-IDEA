@@ -450,8 +450,8 @@ Function AppendField1
 	task.PerformTask
 	Set task = Nothing
 	Set field = Nothing
-	Client.CloseAll
 	db.ControlAmountField "DIFFERENCE"
+	Client.CloseAll
 	Client.OpenDatabase(fname5)
 End Function
 
