@@ -4,42 +4,45 @@ Dim ListBox3$() AS string
 Dim ListBox4$() AS string
 Dim ListBox5$() AS string
 Dim ListBox6$() AS string
+Dim ListBox7$()
 
-Begin Dialog dlgMenu 49,10,339,215,"Journal Entries Completeness Task", .Displayit
+Begin Dialog dlgMenu 49,10,339,234,"Journal Entries Completeness Task", .Displayit
   Text 58,16,100,28, "Text", .txtfname1
   Text 58,65,100,24, "Text", .txtfname2
-  Text 58,113,100,27, "Text", .txtfname3
+  Text 58,126,100,27, "Text", .txtfname3
   Text 171,15,50,14, "TB_OP_Bal Field", .Text2
   Text 171,63,50,10, "TB_CL_Bal Field", .Text2
-  Text 171,112,50,14, "JE_DR Field", .Text2
-  Text 171,129,50,10, "JE_CR Field", .Text2
+  Text 171,125,50,14, "JE_DR Field", .Text2
+  Text 171,142,50,10, "JE_CR Field", .Text2
   DropListBox 231,15,84,11, ListBox1$(), .DropListBox1
   DropListBox 231,63,84,11, ListBox2$(), .DropListBox3
-  DropListBox 231,112,84,10, ListBox3$(), .DropListBox5
-  DropListBox 231,130,84,10, ListBox3$(), .DropListBox6
-  Text 12,172,40,14, "New Filename", .Text2
-  TextBox 61,172,106,12, .txtNewFilename
+  DropListBox 231,125,84,10, ListBox3$(), .DropListBox5
+  DropListBox 231,143,84,10, ListBox3$(), .DropListBox6
+  Text 13,189,40,14, "New Filename", .Text2
+  TextBox 62,189,106,12, .txtNewFilename
   PushButton 12,16,40,14, "&Select file", .PushButton1
   PushButton 12,64,40,14, "Selec&t file", .PushButton2
-  PushButton 12,113,40,14, "Sel&ect file", .PushButton3
-  OKButton 198,172,40,14, "O&k", .OKButton1
-  CancelButton 269,172,40,14, "Can&cel", .CancelButton1
-  Text 171,33,50,14, "TB_OP_Bal Match Field", .Text2
-  DropListBox 231,33,84,11, ListBox4$(), .DropListBox2
-  Text 171,78,50,14, "TB_CL_Bal Match Field", .Text2
-  DropListBox 231,78,84,11, ListBox5$(), .DropListBox4
-  Text 171,146,50,14, "JE db Match Field", .Text2
-  DropListBox 231,147,84,11, ListBox6$(), .DropListBox7
+  PushButton 12,126,40,14, "Sel&ect file", .PushButton3
+  OKButton 199,189,40,14, "O&k", .OKButton1
+  CancelButton 270,189,40,14, "Can&cel", .CancelButton1
+  Text 171,31,50,14, "TB_OP_Bal Match Field", .Text2
+  DropListBox 231,31,84,11, ListBox4$(), .DropListBox2
+  Text 171,79,50,14, "TB_CL_Bal Match Field", .Text2
+  DropListBox 231,79,84,11, ListBox5$(), .DropListBox4
+  Text 171,159,50,14, "JE db Match Field", .Text2
+  DropListBox 231,160,84,11, ListBox6$(), .DropListBox7
   GroupBox 7,4,315,45, "Trial Balance for Openning Balance", .GroupBox1
-  GroupBox 7,100,315,62, "Journal Entries file", .GroupBox2
-  GroupBox 7,52,315,42, "Trial Balance for Closing Balance", .GroupBox2
+  GroupBox 7,113,315,62, "Journal Entries file", .GroupBox2
+  GroupBox 7,51,315,60, "Trial Balance for Closing Balance", .GroupBox2
+  DropListBox 231,95,84,11, ListBox7$(), .DropListBox8
+  Text 171,94,50,14, "Account Description", .Text2
 End Dialog
 '****************************************************************************************************************
 '* Script:		JE_Completeness.iss
 '* By:		Shahbaz Khan
-'* Version:	1.0.3
+'* Version:	1.1.0
 '* Date:		March 25, 2016
-'* Last updated:	Auguest 28, 2016
+'* Last updated:	August 29, 2016
 '* Purpose:	To ensure completeness of JEs by trial balance movement 
 '***************************************************************************************************************
 Option Explicit
@@ -50,6 +53,7 @@ Dim fname3 As String 'JEs file
 Dim fname4 As String ' Summarized JEs file
 Dim fname5 As String ' Joined all files
 Dim amtfield1 As String 	' for tb OP bal
+Dim accdesc  As String 	'for displaying account description field
 Dim amtfield2 As String 	' for tb OP match 
 Dim amtfield3 As String	' for tb CL bal
 Dim amtfield4 As String	' for tb CL match
@@ -84,7 +88,7 @@ Function menu()
 	Dim source As Object
 	Dim table As Object
 	Dim fields As Integer
-	Dim i, j, k As Integer
+	Dim i, j, k,l As Integer
 	Dim field As Object
 	
 	'Looping for dialog display
@@ -135,7 +139,13 @@ Function menu()
 				Else
 					amtfield7 = ""
 				End If
-			
+				
+				If dlg.DropListBox8 > -1 Then				' ListBox7 for character field to display account description
+					accdesc = ListBox7$(dlg.DropListBox8)
+				Else
+					accdesc = ""
+				End If
+				
 				newFilename = dlg.txtNewFilename
 				If validatemenu() Then exitDialog = TRUE
 			Case 0 ' cancel button
@@ -181,13 +191,18 @@ Function menu()
 					fields = table.count
 					ReDim ListBox2$(fields)
 					ReDim ListBox5$(fields)
+					ReDim ListBox7$(fields)
 					j = 0
 					k = 0
+					l = 0
 					For i = 1 To fields
 						Set field = table.getfieldat(i)
 						If field.isnumeric Then
 							ListBox2$(j) = field.name
-							j = j + 1
+							j = j + 1						
+						Else
+							ListBox7$(l) = field.name 
+							l = l + 1	
 						End If
 						ListBox5$(k) = field.name
 						k = k + 1
@@ -199,7 +214,7 @@ Function menu()
 					MsgBox "The file selected does not contain a numeric field", MB_ICONEXCLAMATION, "Error 5"
 					fname2 = ""
 				End If
-
+				
 			Case 3 ' File for JE DR CR Balance
 				Set filebar = CreateObject("ideaex.fileexplorer")
 				filebar.displaydialog
@@ -397,11 +412,13 @@ Function RelateDatabase
 	Set fname5 = dbName
 	task.AddRelation id0, amtfield4, id1, amtfield2
 	task.AddRelation id0, amtfield2, id2, amtfield7
-	task.AddFieldtoInclude id0, amtfield4 'tb CL match field
-	task.AddFieldtoInclude id1, amtfield1 'tb OP Bal field	
-	task.AddFieldtoInclude id2, amtfield5 &"_SUM" 'JE Dr field
-	task.AddFieldtoInclude id2, amtfield6 &"_SUM" 'JE Cr field
-	task.AddFieldtoInclude id0, amtfield3 'tb CL bal field	
+	task.AddFieldtoInclude id0, amtfield4 	'tb CL match field
+	On Error GoTo ErrHandler 		'to resume program if database does not contain a description field
+	task.AddFieldtoInclude id0, accdesc 	'tb CL account description field
+	task.AddFieldtoInclude id1, amtfield1 	'tb OP Bal field	
+	task.AddFieldtoInclude id2, amtfield5 &"_SUM" 	'JE Dr field
+	task.AddFieldtoInclude id2, amtfield6 &"_SUM" 	'JE Cr field
+	task.AddFieldtoInclude id0, amtfield3 	'tb CL bal field	
 	task.CreateVirtualDatabase = False	
 	task.OutputDatabaseName = dbName
 	task.PerformTask
@@ -410,7 +427,10 @@ Function RelateDatabase
 	Set id0 = Nothing
 	Set id1 = Nothing
 	Set id2 = Nothing
-	Exit Sub						
+	Exit Sub
+ErrHandler:
+	MsgBox dbName & " database does not contain ACCOUNT DESCRIPTION field due to lack of field in " & fname2 & " database. Click 'Ok' to continue.", MB_ICONINFORMATION, "Information"		
+	Resume Next						
 End Function
 
 ' Append Field : DERIVED_CLOSING
