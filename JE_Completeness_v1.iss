@@ -37,8 +37,9 @@ End Dialog
 '****************************************************************************************************************
 '* Script:		JE_Completeness.iss
 '* By:		Shahbaz Khan
-'* Version:	1.0
+'* Version:	1.0.3
 '* Date:		March 25, 2016
+'* Last updated:	Auguest 28, 2016
 '* Purpose:	To ensure completeness of JEs by trial balance movement 
 '***************************************************************************************************************
 Option Explicit
@@ -136,7 +137,7 @@ Function menu()
 				End If
 			
 				newFilename = dlg.txtNewFilename
-				if validatemenu() then exitDialog = TRUE
+				If validatemenu() Then exitDialog = TRUE
 			Case 0 ' cancel button
 				exitDialog = TRUE
 				exitScript = TRUE
@@ -395,8 +396,12 @@ Function RelateDatabase
 	dbName = client.UniqueFilename(newFilename)
 	Set fname5 = dbName
 	task.AddRelation id0, amtfield4, id1, amtfield2
-	task.AddRelation id1, amtfield2, id2, amtfield7
-	task.IncludeAllFields
+	task.AddRelation id0, amtfield2, id2, amtfield7
+	task.AddFieldtoInclude id0, amtfield4 'tb CL match field
+	task.AddFieldtoInclude id1, amtfield1 'tb OP Bal field	
+	task.AddFieldtoInclude id2, amtfield5 &"_SUM" 'JE Dr field
+	task.AddFieldtoInclude id2, amtfield6 &"_SUM" 'JE Cr field
+	task.AddFieldtoInclude id0, amtfield3 'tb CL bal field	
 	task.CreateVirtualDatabase = False	
 	task.OutputDatabaseName = dbName
 	task.PerformTask
@@ -495,3 +500,4 @@ Function checkForSpecialChar(temp_string As String, temp_list As String) As Bool
 		End If
 	Next i
 End Function
+
